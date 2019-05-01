@@ -1,13 +1,75 @@
 const express = require('express');
 const authMiddleware = require('../middlewares/auth');
 
+const Project = require('../models/project');
+const Task = require('../models/task');
+
 const router = express.Router();
 
 router.use(authMiddleware);
 
+router.get('/', async (req, res) => {
+    
+    try {
+        
+        const projects = await Project.find().populate('user');
 
-router.get('/', (req, res) => {
-    res.send({ ok: true });
+        return res.send({ projects });
+
+    } catch (err) {
+        return res.status(400).send({ error: 'Erro ao lista todos os projetos' });
+    }
+
 });
+
+router.get('/:projectId', async (req, res) => {
+    try {
+        
+        const project = await Project.findById(req.params.projectId).populate('user');
+
+        return res.send({ project });
+
+    } catch (err) {
+        return res.status(400).send({ error: 'Erro ao lista o projeto' });
+    }
+
+});
+
+// criar
+router.post('/', async (req, res) => {
+    
+    try {
+        
+        const project = await Project.create({...req.body, user: req.userId});
+
+        return res.send({ project });
+
+    } catch (err) {
+        return res.status(400).send({ error: 'Erro ao criar no projeto' });
+    }
+    
+});
+
+// atualizar
+router.put('/', async (req, res) => {
+    res.send({ user: req.userId });
+});
+
+router.delete('/:projectId', async (req, res) => {
+    try {
+        
+        await Project.findByIdAndRemove(req.params.projectId);
+
+        return res.send();
+
+    } catch (err) {
+        return res.status(400).send({ error: 'Erro ao deletar o projeto' });
+    }
+
+});
+
+
+
+
 
 module.exports = app => app.use('/projects', router);

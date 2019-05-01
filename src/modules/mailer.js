@@ -19,11 +19,11 @@ const transport = nodemailer.createTransport({
   const handlebarOptions = {
     viewEngine: {
       extName: '.html',
-      partialsDir: path.resolve('./src/resources/mail/auth'),
-      layoutsDir: path.resolve('./src/resources/mail/auth'),
-      defaultLayout: path.resolve('./src/resources/mail/auth'),
+      partialsDir: path.resolve('./src/resources/mail'),
+      layoutsDir: path.resolve('./src/resources/mail'),
+      defaultLayout: path.resolve('./src/resources/mail'),
     },
-    viewPath: path.resolve('./src/resources/mail/auth'),
+    viewPath: path.resolve('./src/resources/mail'),
     extName: '.html',
   };
   

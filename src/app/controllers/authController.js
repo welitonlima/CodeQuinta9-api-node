@@ -94,7 +94,7 @@ router.post('/forgot_password' , async (req, res) => {
                 //return res.status(400).send({ error: 'Não envio o email de resgate de senha'});
                 console.log(err);
                 
-            console.log(err);
+            console.log(token);
 
             return res.send();
         })
@@ -105,6 +105,39 @@ router.post('/forgot_password' , async (req, res) => {
         console.log(err);
         res.status(400).send({ error: 'Erro no gerar nova senha' });
     }    
+});
+
+
+router.post('/reset_password', async(req, res) => {
+    const { email, token, password } = req.body;
+
+    try{
+        const user = await User.findOne({ email })
+        .select('+passwordResetToken passowordResetExpires');
+
+        if(!user)
+            return res.status(400).send({ error: 'Usuáio não encontrado' });
+        
+        if(token !== user.passwordResetToken)
+            return res.status(400).send({ error: 'Token inválido' });
+
+        const now = new Date();
+
+        if( now > user.passwordResetExpires)
+            return res.status(400).send({ error: 'Token expirado, gere outro' });
+        
+        user.password = password;
+
+        await user.save();
+
+        res.send();
+
+    }
+    catch(err)
+    {
+        res.status(400).send({ error: 'Erro ao tentar resetar senha' });
+    }
+
 });
 
 
