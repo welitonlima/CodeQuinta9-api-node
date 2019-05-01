@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const mailer = require('../../modules/mailer');
 
 const authConfig = require('../../config/auth');
 
@@ -83,9 +84,25 @@ router.post('/forgot_password' , async (req, res) => {
            }
         });
 
+        mailer.sendMail({
+            to: email,
+            from: 'welitonpl@gmail.com',
+            template: 'auth/forgot_password',
+            context: { token },
+        }, (err) => {
+            if(err)
+                //return res.status(400).send({ error: 'Não envio o email de resgate de senha'});
+                console.log(err);
+                
+            console.log(err);
+
+            return res.send();
+        })
+
     }
     catch(err)
     {
+        console.log(err);
         res.status(400).send({ error: 'Erro no gerar nova senha' });
     }    
 });
